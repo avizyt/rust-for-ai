@@ -1,0 +1,63 @@
+[
+  {
+    "label": "Rust: Run",
+    "command": "cargo run",
+    "save": "all",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Rust: Run Release",
+    "command": "cargo run --release",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Check",
+    "command": "cargo check",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Test All",
+    "command": "cargo test",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Test Verbose",
+    "command": "cargo test -- --nocapture",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Clippy",
+    "command": "cargo clippy --all-targets --all-features -- -D warnings",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Format",
+    "command": "cargo fmt",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Format Check",
+    "command": "cargo fmt --check",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Build Release",
+    "command": "cargo build --release",
+    "save": "all",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Rust: Full Quality Check",
+    "command": "cargo fmt --check && cargo clippy --all-targets --all-features -- -D warnings && cargo test",
+    "save": "all",
+    "use_new_terminal": false
+  }
+]
