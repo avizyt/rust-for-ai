@@ -54,10 +54,17 @@
 //     process_all_text_backends(&backends, &request);
 // }
 
+use std::fs::File;
+
 use rust_lab::{
     InferenceRecord, calculate_total_latency, count_requests_by_model, count_slow_requests,
     find_slow_requests, total_tokens_by_model,
 };
+
+fn open_log_file(path: &str) -> Result<File, std::io::Error> {
+    let file = File::open(path)?;
+    Ok(file)
+}
 
 fn main() {
     let records = vec![
@@ -106,4 +113,16 @@ fn main() {
     println!("{}", slow_rqst);
 
     println!("{:?}", total_tokens_by_model(&records));
+
+    let result = open_log_file("./data/inference_logs.jsonl");
+
+    match result {
+        Ok(_file) => {
+            println!("File opened successfully");
+        }
+
+        Err(error) => {
+            eprintln!("Failed to open file: {}", error);
+        }
+    }
 }
