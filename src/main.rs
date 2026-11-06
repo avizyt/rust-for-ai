@@ -1,21 +1,109 @@
-use rust_lab::{InferenceRequest, OllamaBackend, VllmBackend, inspect_backend, process_request};
+// use rust_lab::{
+//     EmbeddingBackend, InferenceBackend, InferenceRequest, OllamaBackend, VllmBackend,
+//     create_ollama_backend, inspect_backend, process_all_text_backends, process_request,
+// };
+//
+// fn main() {
+//     // Create inference request
+//     let request = InferenceRequest::new(
+//         "llama3.2:1b".to_string(),
+//         "Explain how transformer models work".to_string(),
+//         256,
+//         Some(0.7),
+//     )
+//     .expect("Invalid inference request");
+//
+//     // ======================================
+//     // Static Dispatch
+//     // ======================================
+//
+//     let ollama = OllamaBackend;
+//     let vllm = VllmBackend;
+//
+//     inspect_backend(&ollama);
+//     inspect_backend(&vllm);
+//
+//     let ollama_response = process_request(&ollama, &request);
+//     println!("Ollama response: {}", ollama_response);
+//
+//     // ======================================
+//     // Associated Types
+//     // ======================================
+//
+//     let embedding_backend = EmbeddingBackend;
+//
+//     let embedding: Vec<f32> = process_request(&embedding_backend, &request);
+//
+//     println!("Embedding: {:?}", embedding);
+//
+//     // ======================================
+//     // impl Trait
+//     // ======================================
+//
+//     let factory_backend = create_ollama_backend();
+//
+//     println!("Factory backend: {}", factory_backend.name());
+//
+//     // ======================================
+//     // Dynamic Dispatch
+//     // ======================================
+//
+//     let backends: Vec<Box<dyn InferenceBackend<Output = String>>> =
+//         vec![Box::new(OllamaBackend), Box::new(VllmBackend)];
+//
+//     process_all_text_backends(&backends, &request);
+// }
+
+use rust_lab::{
+    InferenceRecord, calculate_total_latency, count_requests_by_model, count_slow_requests,
+    find_slow_requests, total_tokens_by_model,
+};
 
 fn main() {
-    let request = InferenceRequest::new(
-        "llama-3.2-1b".to_string(),
-        "Explain attention".to_string(),
-        256,
-        Some(0.7),
-    )
-    .expect("Invalid inference request");
+    let records = vec![
+        InferenceRecord {
+            request_id: "req-001".to_string(),
+            model: "llama3.2".to_string(),
+            prompt_tokens: 120,
+            completion_tokens: 250,
+            latency_ms: 420,
+        },
+        InferenceRecord {
+            request_id: "req-002".to_string(),
+            model: "mistral".to_string(),
+            prompt_tokens: 200,
+            completion_tokens: 300,
+            latency_ms: 650,
+        },
+        InferenceRecord {
+            request_id: "req-003".to_string(),
+            model: "llama3.2".to_string(),
+            prompt_tokens: 150,
+            completion_tokens: 180,
+            latency_ms: 380,
+        },
+    ];
 
-    let ollama = OllamaBackend::new("llama3.2:1b".to_string());
+    for record in &records {
+        println!(
+            "{} | {} | {} ms",
+            record.request_id, record.model, record.latency_ms
+        );
+    }
 
-    let vllm = VllmBackend::new("http://localhost:8000".to_string());
+    for item in count_requests_by_model(&records) {
+        println!("{:?}", item);
+    }
 
-    inspect_backend(&ollama);
-    inspect_backend(&vllm);
+    let result = find_slow_requests(&records, 400);
 
-    process_request(&ollama, &request);
-    process_request(&vllm, &request);
+    println!("{:?}", result);
+
+    let total_latency = calculate_total_latency(&records);
+    println!("{}", total_latency);
+
+    let slow_rqst = count_slow_requests(&records, 200);
+    println!("{}", slow_rqst);
+
+    println!("{:?}", total_tokens_by_model(&records));
 }
