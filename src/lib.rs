@@ -1,5 +1,10 @@
 use std::fmt::Debug;
 
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
+
 // ==========================================
 // 1. Request Errors
 // ==========================================
@@ -250,6 +255,20 @@ pub fn total_tokens_by_model(records: &[InferenceRecord]) -> HashMap<String, u64
         *count += total_tokens;
     }
     map
+}
+
+pub fn count_log_lines(path: &str) -> Result<usize, std::io::Error> {
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+
+    let mut count = 0;
+
+    for line in reader.lines() {
+        let _line = line?;
+        count += 1;
+    }
+
+    Ok(count)
 }
 
 // ==========================================
