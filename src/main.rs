@@ -54,7 +54,10 @@
 //     process_all_text_backends(&backends, &request);
 // }
 
-use std::fs::File;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
 
 use rust_lab::{
     InferenceRecord, calculate_total_latency, count_requests_by_model, count_slow_requests,
@@ -64,6 +67,18 @@ use rust_lab::{
 fn open_log_file(path: &str) -> Result<File, std::io::Error> {
     let file = File::open(path)?;
     Ok(file)
+}
+
+fn read_logs(path: &str) -> Result<(), std::io::Error> {
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+
+    for line in reader.lines() {
+        let line = line?;
+        println!("{}", line);
+    }
+
+    Ok(())
 }
 
 fn main() {
@@ -125,4 +140,6 @@ fn main() {
             eprintln!("Failed to open file: {}", error);
         }
     }
+
+    let _ = read_logs("./data/Inference_logs.jsonl");
 }
