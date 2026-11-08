@@ -1,3 +1,6 @@
+pub mod analyzer;
+pub mod models;
+pub mod reader;
 use std::fmt::Debug;
 
 use std::{
